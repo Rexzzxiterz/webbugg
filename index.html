@@ -1,2052 +1,1796 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Dashboard - Blue Knight</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <style>
-    /* Global Reset and Base Styles */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: #0D0014;
-      color: #E0E0E0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      padding: 20px;
-      position: relative; 
-      overflow-x: hidden; 
-    }
-
-    /* Main App Container (for smooth animation with sidebar) */
-    .app-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        max-width: 420px;
-        transition: transform 0.3s ease;
-        position: relative;
-        z-index: 10;
-    }
-
-    /* Header/Title */
-    h1.main-title {
-      font-family: 'Orbitron', sans-serif;
-      color: #00AEEF;
-      font-size: 32px;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px rgba(0,174,239,0.6);
-      letter-spacing: 2px;
-    }
-
-    /* Main Content Panels */
-    .container {
-      background: #001C2E;
-      border: 1px solid #0066CC;
-      padding: 24px;
-      border-radius: 20px;
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 0 25px rgba(0,174,239,0.4);
-      backdrop-filter: blur(5px);
-      position: relative;
-      margin-bottom: 20px;
-    }
-
-    /* Profile Card and Details */
-    .profile-card {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .profile-logo {
-      width: 100px; height: 100px; margin: 0 auto 15px; display: block; border-radius: 50%;
-      box-shadow: 0 0 10px rgba(0,174,239,0.8); border: 3px solid #00AEEF; object-fit: cover;
-    }
-    .profile-username { font-family: 'Orbitron', sans-serif; font-size: 24px; color: #E0E0E0; font-weight: bold; margin-bottom: 8px; }
-    .profile-details { font-size: 14px; color: #9A9A9A; }
-    .profile-details span { color: #00AEEF; font-weight: 600; }
-
-    /* Section Titles and Inputs */
-    .section-title { font-family: 'Orbitron', sans-serif; font-size: 18px; color: #00AEEF; margin-bottom: 15px; text-align: left; text-transform: uppercase; letter-spacing: 1px; }
-    input[type="text"], select, textarea { width: 100%; padding: 14px 18px; border-radius: 10px; background: #002B44; border: 1px solid #00AEEF; color: #E0E0E0; margin-bottom: 25px; font-size: 16px; font-family: 'Montserrat', sans-serif; outline: none; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
-    select { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%23E0E0E0" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position: right 15px center; padding-right: 40px; }
-    
-    /* Execute Button */
-    .execute-button { background: linear-gradient(90deg, #00AEEF, #007BFF); color: #fff; padding: 18px; width: 100%; border-radius: 10px; font-weight: bold; border: none; margin-bottom: 12px; cursor: pointer; font-size: 18px; letter-spacing: 1px; transition: 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 0 15px rgba(0,174,239,0.4); }
-    .execute-button:disabled { background: #004466; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
-    .execute-button:hover:not(:disabled) { background: linear-gradient(90deg, #007BFF, #00AEEF); box-shadow: 0 0 25px rgba(0,174,239,0.8); }
-
-    /* Footer Action - DIHAPUS */
-    .footer-action-container { display: none; }
-
-    /* Popup */
-    .popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: #002B44; color: #00ff5e; padding: 16px 22px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,255,94,0.7); font-weight: bold; display: none; z-index: 9999; animation: zoomFade 2s ease forwards; text-align: center; }
-    @keyframes zoomFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 85% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
-
-    /* ======================================= */
-    /* DARKVERSE DASHBOARD STYLES */
-    /* ======================================= */
-    .darkverse-dashboard {
-        display: none;
-        width: 100%;
-        max-width: 420px;
-    }
-
-    .darkverse-dashboard.active {
-        display: block;
-    }
-
-    .darkverse-header {
-      text-align: center;
-      margin-bottom: 25px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #0066CC;
-    }
-    .darkverse-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 28px;
-      color: #00AEEF;
-      margin-bottom: 10px;
-      text-shadow: 0 0 8px rgba(0,174,239,0.6);
-    }
-    .darkverse-subtitle {
-      font-size: 14px;
-      color: #9A9A9A;
-      margin-bottom: 15px;
-    }
-    .darkverse-contact {
-      background: rgba(0,174,239,0.1);
-      border: 1px solid #00AEEF;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 14px;
-      color: #00AEEF;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    .darkverse-contact i {
-      margin-right: 8px;
-    }
-    
-    /* Menu Buttons */
-    .darkverse-menu {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 25px;
-    }
-    .darkverse-button {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 15px 10px;
-      background: #001C2E;
-      border: 1px solid #0066CC;
-      border-radius: 10px;
-      color: #E0E0E0;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      min-height: 80px;
-    }
-    .darkverse-button i {
-      color: #00AEEF;
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-    .darkverse-button:hover {
-      background: #002B44;
-      border-color: #00AEEF;
-      transform: translateY(-3px);
-    }
-    
-    /* Telegram Channel */
-    .telegram-channel {
-      background: rgba(0, 136, 204, 0.1);
-      border: 1px solid #0088cc;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 25px;
-      text-align: center;
-    }
-    .telegram-title {
-      font-size: 16px;
-      color: #0088cc;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    .telegram-desc {
-      font-size: 13px;
-      color: #9A9A9A;
-    }
-    
-    /* Server Stats */
-    .server-stats {
-      margin-bottom: 25px;
-    }
-    .stats-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 18px;
-      color: #00AEEF;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .stat-card {
-      background: #001C2E;
-      border: 1px solid #0066CC;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-    }
-    .stat-value {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 24px;
-      color: #00AEEF;
-      margin-bottom: 5px;
-    }
-    .stat-label {
-      font-size: 12px;
-      color: #9A9A9A;
-    }
-
-    /* Hamburger Button */
-    #openSidebarBtn {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background: #002B44;
-      color: #00AEEF;
-      border: 1px solid #00AEEF;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 50; 
-      transition: all 0.3s ease;
-    }
-    #openSidebarBtn:hover {
-      background: #0066CC;
-      transform: scale(1.05);
-    }
-    
-    /* ======================================= */
-    /* MUSIC PLAYER DASHBOARD STYLES */
-    /* ======================================= */
-    .music-player-dashboard {
-        display: none; 
-        text-align: center;
-        padding-top: 20px;
-    }
-
-    .music-player-dashboard.active {
-        display: block;
-    }
-
-    .player-controls button {
-        background: #00AEEF;
-        border: none;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        margin: 0 10px;
-        color: #001C2E;
-        font-size: 24px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    .player-controls button:hover {
-        background: #007BFF;
-    }
-    .song-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 18px;
-        color: #E0E0E0;
-        margin-bottom: 20px;
-        text-shadow: 0 0 5px rgba(0,174,239,0.4);
-    }
-    
-    /* Progress Bar (Garis waktu lagu) */
-    #progressContainer {
-        width: 100%;
-        height: 8px;
-        background: #0066CC;
-        border-radius: 4px;
-        margin-top: 30px;
-        margin-bottom: 10px;
-        cursor: pointer;
-        overflow: hidden;
-    }
-    #progressBar {
-        width: 0%;
-        height: 100%;
-        background: linear-gradient(90deg, #00AEEF, #007BFF);
-        transition: width 0.1s linear;
-    }
-    .time-display {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        color: #9A9A9A;
-        margin-bottom: 30px;
-    }
-
-    /* Dashboard Visibility */
-    .dashboard-page {
-        display: none;
-    }
-    .dashboard-page.active {
-        display: block;
-    }
-
-    /* ======================================= */
-    /* PROFILE ICON STYLES */
-    /* ======================================= */
-    #profileIcon {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: #002B44;
-      border: 2px solid #00AEEF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #00AEEF;
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 50;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 10px rgba(0,174,239,0.5);
-    }
-
-    #profileIcon:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 15px rgba(0,174,239,0.8);
-    }
-
-    /* Profile Info Panel */
-    #profileInfoPanel {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #001C2E;
-      border: 2px solid #00AEEF;
-      border-radius: 20px;
-      padding: 30px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 30px rgba(0,174,239,0.6);
-      z-index: 2000;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    #profileInfoPanel.active {
-      display: flex;
-      animation: fadeInScale 0.3s ease forwards;
-    }
-
-    @keyframes fadeInScale {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    }
-
-    .profile-info-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin-bottom: 25px;
-    }
-
-    .profile-info-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 22px;
-      color: #00AEEF;
-      text-shadow: 0 0 8px rgba(0,174,239,0.6);
-    }
-
-    #closeProfileInfoBtn {
-      background: none;
-      border: none;
-      color: #00AEEF;
-      font-size: 24px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    #closeProfileInfoBtn:hover {
-      color: #fff;
-    }
-
-    .profile-info-content {
-      width: 100%;
-      text-align: center;
-    }
-
-    .profile-info-avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid #00AEEF;
-      margin: 0 auto 20px;
-      box-shadow: 0 0 15px rgba(0,174,239,0.7);
-    }
-
-    .profile-info-username {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 24px;
-      color: #E0E0E0;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-
-    .profile-info-details {
-      background: #002B44;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      border: 1px solid #0066CC;
-    }
-
-    .profile-info-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #0066CC;
-    }
-
-    .profile-info-item:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-
-    .profile-info-label {
-      color: #9A9A9A;
-      font-size: 14px;
-    }
-
-    .profile-info-value {
-      color: #00AEEF;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    /* Overlay */
-    #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 1500;
-      display: none;
-    }
-
-    #overlay.active {
-      display: block;
-    }
-
-    /* ======================================= */
-    /* ✅ ASEP ROKOK BACKGROUND STYLES */
-    /* ======================================= */
-    #smoke-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .smoke-particle {
-      position: absolute;
-      bottom: 0;
-      width: 5px;
-      height: 5px;
-      background-color: rgba(255, 50, 50, 0.6);
-      border-radius: 50%;
-      filter: blur(2px);
-      animation: smoke-rise linear infinite;
-    }
-
-    @keyframes smoke-rise {
-      0% {
-        transform: translateY(0) translateX(0) scale(0.5);
-        opacity: 0.8;
-      }
-      50% {
-        transform: translateY(-50vh) translateX(10px) scale(1.5);
-        opacity: 0.5;
-      }
-      100% {
-        transform: translateY(-100vh) translateX(20px) scale(2);
-        opacity: 0;
-      }
-    }
-
-    /* ======================================= */
-    /* IP CHECK DASHBOARD STYLES */
-    /* ======================================= */
-    .ip-info-result {
-      background: #002B44;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      border: 1px solid #0066CC;
-      display: none;
-    }
-
-    .ip-info-result.active {
-      display: block;
-    }
-
-    .ip-info-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #0066CC;
-    }
-
-    .ip-info-item:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-
-    .ip-info-label {
-      color: #9A9A9A;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .ip-info-value {
-      color: #00AEEF;
-      font-weight: 600;
-      font-size: 14px;
-      text-align: right;
-      max-width: 60%;
-      word-break: break-word;
-    }
-
-    .loading-spinner {
-      display: none;
-      text-align: center;
-      color: #00AEEF;
-      margin: 20px 0;
-    }
-
-    .loading-spinner.active {
-      display: block;
-    }
-
-    .spinner {
-      border: 3px solid #0066CC;
-      border-top: 3px solid #00AEEF;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 10px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* ======================================= */
-    /* YOUTUBE DOWNLOADER STYLES */
-    /* ======================================= */
-    .youtube-downloader {
-        display: none;
-    }
-
-    .youtube-downloader.active {
-        display: block;
-    }
-
-    .search-result-item {
-      display: flex;
-      align-items: center;
-      background: #002B44;
-      border-radius: 10px;
-      margin: 10px 0;
-      cursor: pointer;
-      padding: 12px;
-      transition: 0.3s;
-      border: 1px solid #0066CC;
-    }
-
-    .search-result-item:hover {
-      background: #003355;
-      border-color: #00AEEF;
-    }
-
-    .search-result-item img {
-      width: 80px;
-      height: 60px;
-      border-radius: 6px;
-      margin-right: 12px;
-      border: 1px solid #00AEEF;
-    }
-
-    .search-result-info {
-      text-align: left;
-      flex: 1;
-    }
-
-    .search-result-info h5 {
-      color: #E0E0E0;
-      font-size: 14px;
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    .search-result-info p {
-      color: #9A9A9A;
-      font-size: 12px;
-      margin: 0;
-    }
-
-    .status-indicator {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 5px;
-    }
-
-    .status-processing { background: #FFA500; }
-    .status-success { background: #00ff5e; }
-    .status-error { background: #ff4444; }
-
-    .youtube-player {
-      background: #002B44;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      border: 1px solid #0066CC;
-      display: none;
-    }
-
-    .youtube-player.active {
-      display: block;
-    }
-
-    .youtube-player h3 {
-      color: #00AEEF;
-      font-family: 'Orbitron', sans-serif;
-      margin-bottom: 10px;
-    }
-
-    .youtube-player p {
-      color: #9A9A9A;
-      margin-bottom: 15px;
-    }
-
-    .youtube-audio {
-      width: 100%;
-      margin: 15px 0;
-    }
-
-    .youtube-controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 15px;
-    }
-
-    .youtube-controls button {
-      background: #00AEEF;
-      color: #001C2E;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .youtube-controls button:hover {
-      background: #007BFF;
-    }
-
-    /* ======================================= */
-    /* CHAT AI DASHBOARD STYLES - UPDATED */
-    /* ======================================= */
-    .chat-ai-dashboard {
-        display: none;
-    }
-
-    .chat-ai-dashboard.active {
-        display: block;
-    }
-
-    .chat-container {
-      background: #002B44;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      border: 1px solid #0066CC;
-      max-height: 450px; /* Diperbesar */
-      min-height: 450px; /* Diperbesar */
-      overflow-y: auto;
-    }
-
-    .chat-message {
-      margin-bottom: 15px;
-      padding: 12px;
-      border-radius: 10px;
-      max-width: 85%;
-      word-wrap: break-word;
-    }
-
-    .user-message {
-      background: #003355;
-      border: 1px solid #00AEEF;
-      margin-left: auto;
-      text-align: right;
-    }
-
-    .ai-message {
-      background: #001C2E;
-      border: 1px solid #0066CC;
-      margin-right: auto;
-    }
-
-    .message-sender {
-      font-weight: 600;
-      margin-bottom: 5px;
-      font-size: 12px;
-      color: #00AEEF;
-    }
-
-    .message-content {
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    .chat-input-container {
-  display: flex;
-  gap: 8px;
-  margin-top: 15px;
-  align-items: center; /* ✅ sejajarkan tombol dengan input */
-}
-
-    .chat-input {
-  flex: 1;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: #002B44;
-  border: 1px solid #00AEEF;
-  color: #E0E0E0;
-  font-family: 'Montserrat', sans-serif;
-  resize: none;
-  min-height: 45px; /* ✅ samakan dengan tombol */
-  outline: none;
-  font-size: 14px;
-}
-
-.send-button {
-  background: #00AEEF;
-  color: #001C2E;
-  border: none;
-  border-radius: 10px;
-  padding: 0 18px; /* ✅ biar tinggi tombol proporsional */
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 45px; /* ✅ sejajar dengan input */
-  font-size: 14px;
-}
-
-    .send-button:hover {
-      background: #007BFF;
-    }
-
-    .send-button:disabled {
-      background: #004466;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    .typing-indicator {
-      display: none;
-      color: #00AEEF;
-      font-style: italic;
-      margin: 10px 0;
-      text-align: left;
-    }
-
-    .typing-indicator.active {
-      display: block;
-    }
-
-    .clear-chat-btn {
-      background: rgba(255, 68, 68, 0.1);
-      border: 1px solid #ff4444;
-      color: #ff4444;
-      border-radius: 8px;
-      padding: 8px 15px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: 0.3s;
-      margin-top: 10px;
-    }
-
-    .clear-chat-btn:hover {
-      background: #ff4444;
-      color: #001C2E;
-    }
-
-    .api-status {
-      font-size: 12px;
-      color: #00ff5e;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Tambahkan Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tambahkan ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-black: #0a0a0a;
+            --carbon-dark: #121212;
+            --carbon-medium: #1a1a1a;
+            --carbon-light: #2a2a2a;
+            --accent-purple: #b19cd9;
+            --accent-purple-light: #d8c8ff;
+            --accent-purple-dark: #8a6bc9;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--primary-black);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            font-size: 15px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Simplified background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(177, 156, 217, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(216, 200, 255, 0.08) 0%, transparent 50%),
+                var(--primary-black);
+            z-index: -2;
+        }
+
+        /* Navigation Header - Simplified */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(18, 18, 18, 0.95);
+            border-bottom: 1px solid rgba(177, 156, 217, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 12px 0;
+        }
+
+        .nav-container {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, var(--accent-purple-light), white);
+            border-radius: 6px;
+            transform: rotate(45deg);
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(45deg, white, var(--accent-purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            text-transform: uppercase;
+            font-weight: 500;
+            font-size: 12px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, white, var(--accent-purple-light));
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after,
+        .nav-menu a.active::after {
+            width: 100%;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: white;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        /* Hero Section with 3D Carousel - Simplified */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 80px 16px 60px;
+        }
+
+        .carousel-container {
+            width: 100%;
+            max-width: 100%;
+            height: 500px;
+            perspective: 1000px;
+            position: relative;
+            padding-top: 40px;
+        }
+
+        .carousel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .carousel-item {
+            position: absolute;
+            width: 280px;
+            height: 380px;
+            left: 50%;
+            top: 50%;
+            transform-style: preserve-3d;
+            transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+            cursor: pointer;
+            transform-origin: center center;
+        }
+
+        .carousel-item .card {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-number {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 42px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.1);
+            font-family: 'Orbitron', monospace;
+            letter-spacing: -2px;
+            line-height: 1;
+            z-index: 1;
+        }
+
+        .card-image {
+            width: 130px;
+            height: 85px;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: skew(-10deg);
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: skew(10deg) scale(1.1);
+        }
+
+        .card-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            color: white;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 20px;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tech-badge {
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            color: white;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .card-cta {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), var(--accent-purple-light));
+            border: none;
+            border-radius: 25px;
+            color: var(--primary-black);
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            font-size: 13px;
+            position: relative;
+            z-index: 2;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .card-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(177, 156, 217, 0.4);
+        }
+
+        /* Carousel Controls */
+        .carousel-controls {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .carousel-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(177, 156, 217, 0.2);
+            border-color: var(--accent-purple-light);
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        /* Profile & Weather Section */
+        .profile-section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, white, var(--accent-purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .profile-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(177, 156, 217, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple-light), white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary-black);
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .profile-info p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .profile-time {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            background: linear-gradient(45deg, white, var(--accent-purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            position: absolute;
+            top: 25px;
+            right: 25px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-purple-light);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .weather-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .weather-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(177, 156, 217, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .weather-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .weather-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .weather-time {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            background: linear-gradient(45deg, white, var(--accent-purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        #weatherChart {
+            width: 100%;
+            height: 300px;
+        }
+
+        .weather-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .weather-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .weather-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(177, 156, 217, 0.2);
+            border-radius: 50%;
+            color: var(--accent-purple-light);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .weather-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .weather-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .weather-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .temperature-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .temperature-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .temperature-marker {
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .footer-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-size: 14px;
+            max-width: 300px;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .social-icon:hover {
+            background: var(--accent-purple-light);
+            color: var(--primary-black);
+            transform: translateY(-2px);
+        }
+
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 100%;
+            margin: 0 auto;
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .copyright {
+            color: var(--accent-purple-light);
+            font-size: 13px;
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-black);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .loading-logo svg {
+            width: 100%;
+            height: 100%;
+            animation: logoSpin 3s linear infinite;
+        }
+
+        .loading-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .loading-text::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple-light), transparent);
+            animation: loadingLine 2s ease-in-out infinite;
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .spinner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .spinner-1 {
+            border-top: 3px solid var(--accent-purple-light);
+            animation-duration: 1s;
+        }
+
+        .spinner-2 {
+            border-right: 3px solid white;
+            animation-duration: 1.2s;
+            animation-direction: reverse;
+        }
+
+        .spinner-3 {
+            border-bottom: 3px solid var(--accent-purple-light);
+            animation-duration: 1.5s;
+        }
+
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-purple-light), white);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-purple-light);
+        }
+
+        .loading-dots {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-purple-light);
+            margin: 0 5px;
+            animation: dotPulse 1.5s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+            background-color: white;
+        }
+
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+            background-color: var(--accent-purple);
+        }
+
+        /* Animasi Keyframes untuk Loading */
+        @keyframes logoSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes loadingLine {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 60px;
+                flex-direction: column;
+                background: rgba(18, 18, 18, 0.98);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                padding: 20px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                gap: 0;
+            }
+
+            .nav-menu li {
+                margin: 10px 0;
+            }
+
+            .nav-menu a {
+                display: block;
+                padding: 15px 30px;
+                font-size: 16px;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .hero {
+                padding: 70px 16px 50px;
+                min-height: 80vh;
+            }
+
+            .carousel-container {
+                height: 450px;
+                padding-top: 30px;
+            }
+
+            .carousel-item {
+                width: 260px;
+                height: 360px;
+            }
+
+            .carousel-item .card {
+                padding: 18px;
+            }
+
+            .card-number {
+                font-size: 38px;
+                top: 12px;
+                right: 15px;
+            }
+
+            .card-image {
+                width: 120px;
+                height: 80px;
+                margin-bottom: 18px;
+            }
+
+            .card-title {
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+
+            .card-description {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+
+            .card-tech {
+                margin-bottom: 18px;
+                gap: 6px;
+            }
+
+            .tech-badge {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            .card-cta {
+                padding: 12px 25px;
+                font-size: 13px;
+            }
+
+            .carousel-controls {
+                bottom: -45px;
+                gap: 12px;
+            }
+
+            .carousel-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+
+            .carousel-indicators {
+                top: 15px;
+                gap: 8px;
+            }
+
+            .indicator {
+                width: 10px;
+                height: 10px;
+            }
+
+            .profile-section {
+                padding: 60px 16px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .profile-card, .weather-card {
+                padding: 20px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .profile-time {
+                position: static;
+                margin-top: 10px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .weather-info {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                padding: 30px 16px 15px;
+            }
+
+            .loading-text {
+                font-size: 1.2rem;
+            }
+
+            .loading-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .spinner-container {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .footer-content {
+                grid-template-columns: 2fr 1fr 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<!-- ======= Bottom Navigation (Tema Ungu Glow, Transisi Halus) ======= -->
-<style>
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(0, 34, 51, 0.95);
-    border-top: 1px solid #0066CC;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 10px 0;
-    z-index: 1200;
-    backdrop-filter: blur(6px);
-  }
-
-  .bottom-nav button {
-    background: none;
-    border: none;
-    color: #rgba(0,174,239,0.8);
-    text-align: center;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    position: relative;
-    transition: all 0.3s ease;
-  }
-
-  .bottom-nav button i {
-    font-size: 20px;
-    transition: all 0.3s ease;
-  }
-
-  /* Efek Tombol Aktif (Glow Ungu Lembut seperti Tema Aplikasi) */
-  .bottom-nav button.active {
-    color: #00AEEF;
-    text-shadow: 0 0 8px rgba(0,174,239,0.8);
-    transform: translateY(-3px);
-  }
-
-  .bottom-nav button.active i {
-    color: #00AEEF;
-    text-shadow: 0 0 12px rgba(0,174,239,0.8);
-  }
-
-  .bottom-nav button.active::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 55px;
-    height: 55px;
-    background: radial-gradient(circle, rgba(0,174,239,0.35) 0%, rgba(0,174,239,0) 70%);
-    border-radius: 50%;
-    z-index: -1;
-    filter: blur(4px);
-    transition: opacity 0.3s ease;
-  }
-
-  .bottom-nav button:active {
-    transform: scale(0.96);
-    opacity: 0.9;
-  }
-
-  @media (max-width: 400px) {
-    .bottom-nav button i { font-size: 18px; }
-    .bottom-nav button span { font-size: 11px; }
-  }
-</style>
-
-<div class="bottom-nav" id="bottomNav">
-  <button id="navAttackBtn" class="active" title="DASBOARD (Attack Menu)">
-    <i class="fas fa-bolt"></i>
-    <span>DASHBOARD</span>
-  </button>
-
-  <button id="navMusicBtn" title="MUSIK (Play Lagu)">
-    <i class="fas fa-music"></i>
-    <span>MUSIK</span>
-  </button>
-
-  <button id="navIpCheckBtn" title="CEK IP (IP Information)">
-    <i class="fas fa-globe"></i>
-    <span>CEK IP</span>
-  </button>
-
-  <button id="navYoutubeBtn" title="YOUTUBE (Downloader)">
-    <i class="fab fa-youtube"></i>
-    <span>YOUTUBE</span>
-  </button>
-
-  <button id="navChatAiBtn" title="CHAT AI (AI Assistant)">
-    <i class="fas fa-robot"></i>
-    <span>CHAT AI</span>
-  </button>
-</div>
-
-<script>
-  const navAttackBtn = document.getElementById('navAttackBtn');
-  const navMusicBtn = document.getElementById('navMusicBtn');
-  const navIpCheckBtn = document.getElementById('navIpCheckBtn');
-  const navYoutubeBtn = document.getElementById('navYoutubeBtn');
-  const navChatAiBtn = document.getElementById('navChatAiBtn');
-
-  function setActive(btn) {
-    document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-
-  // === Tombol DASBOARD ===
-  navAttackBtn.addEventListener('click', () => {
-    setActive(navAttackBtn);
-    showDashboard('attack');
-  });
-
-  // === Tombol MUSIK ===
-  navMusicBtn.addEventListener('click', () => {
-    setActive(navMusicBtn);
-    showDashboard('music');
-  });
-
-  // === Tombol CEK IP ===
-  navIpCheckBtn.addEventListener('click', () => {
-    setActive(navIpCheckBtn);
-    showDashboard('ipcheck');
-  });
-
-  // === Tombol YOUTUBE ===
-  navYoutubeBtn.addEventListener('click', () => {
-    setActive(navYoutubeBtn);
-    showDashboard('youtube');
-  });
-
-  // === Tombol CHAT AI ===
-  navChatAiBtn.addEventListener('click', () => {
-    setActive(navChatAiBtn);
-    showDashboard('chat-ai');
-  });
-</script>
-<!-- ======= End Bottom Navigation ======= -->
-  <!-- Asep Rokok Background -->
-  <div id="black-background"></div>
-  
-  <button id="openSidebarBtn"><i class="fas fa-bars"></i></button>
-  
-  <!-- Profile Icon di Kanan Atas -->
-  <div id="profileIcon">
-    <i class="fas fa-user"></i>
-  </div>
-
-  <!-- Profile Info Panel -->
-  <div id="overlay"></div>
-  <div id="profileInfoPanel">
-    <div class="profile-info-header">
-      <div class="profile-info-title">Account Information</div>
-      <button id="closeProfileInfoBtn"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="profile-info-content">
-      <img src="https://files.catbox.moe/5d74qr.jpg" alt="Profile Avatar" class="profile-info-avatar" />
-      <div class="profile-info-username">${username || 'Unknown'}</div>
-      <div class="profile-info-details">
-    <div class="profile-info-item">
-        <span class="profile-info-label">Username:</span>
-        <span class="profile-info-value">${username || 'Unknown'}</span>
-    </div>
-    <div class="profile-info-item">
-        <span class="profile-info-label">Password:</span>
-        <span class="profile-info-value">${userKey || 'Unknown'}</span> <!-- ✅ INI YANG BENAR -->
-    </div>
-    <div class="profile-info-item">
-        <span class="profile-info-label">Role:</span>
-        <span class="profile-info-value">OWNER</span>
-    </div>
-    <div class="profile-info-item">
-        <span class="profile-info-label">Expired:</span>
-        <span class="profile-info-value">${formattedTime}</span>
-    </div>
-    <div class="profile-info-item">
-        <span class="profile-info-label">Status:</span>
-        <span class="profile-info-value">Active</span>
-    </div>
-</div>
-    </div>
-  </div>
-
-  <div class="app-wrapper">
-    <h1 class="main-title">Blue Knight</h1>
-
-    <!-- Dashboard Attack Menu -->
-    <div id="attackDashboard" class="dashboard-page active">
-        <div class="container profile-card">
-            <img src="https://files.catbox.moe/6ynwcc.jpg" alt="Logo" class="profile-logo" />
-            <div class="profile-username">${username || 'Unknown'}</div>
-            <div class="profile-details">
-          Role: <span>OWNER</span> • Exp: <span>${formattedTime}</span></div>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#d8c8ff;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#b19cd9;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <polygon points="20,2 38,14 38,26 20,38 2,26 2,14" fill="none" stroke="url(#logoGradient)" stroke-width="2"/>
+                <polygon points="20,8 32,16 32,24 20,32 8,24 8,16" fill="url(#logoGradient)" opacity="0.3"/>
+                <circle cx="20" cy="20" r="3" fill="url(#logoGradient)"/>
+            </svg>
         </div>
-
-        <div class="container">
-            <div class="section-title">Target Number</div>
-            <input type="text" id="targetNumberInput" placeholder="628xxxxxxxxxx" />
-
-            <div class="section-title">Select Bug</div>
-            <select id="bugSelect">
-                <option value="" disabled selected>Bug Mode...</option>
-                <option value="blank">BLANK - UI</option>
-                <option value="blankios">FORCE - HARD </option>
-                <option value="invis">DELAY - INVIS</option>
-            </select>
-
-            <button class="execute-button" id="executeBtn"><i class="fas fa-bug"></i> KIRIM BUG</button>
-
-            <!-- Footer action dihapus sesuai permintaan -->
+        <div class="loading-text">DARK KNIGHT</div>
+        <div class="spinner-container">
+            <div class="spinner spinner-1"></div>
+            <div class="spinner spinner-2"></div>
+            <div class="spinner spinner-3"></div>
         </div>
-    </div>
-    
-    <!-- Dashboard Music Player -->
-    <div id="musicDashboard" class="dashboard-page container music-player-dashboard">
-        <div class="section-title">Music Player</div>
-
-        <div class="song-title" id="songTitle">
-            <i class="fas fa-headphones-alt"></i> Lagu: Ransom Speed Up
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
         </div>
-
-        <div class="player-controls">
-            <button id="playPauseBtn"><i class="fas fa-play"></i></button>
-            <button id="stopBtn"><i class="fas fa-stop"></i></button>
-        </div>
-
-        <div id="progressContainer">
-            <div id="progressBar"></div>
-        </div>
-
-        <div class="time-display">
-            <span id="currentTime">0:00</span>
-            <span id="duration">0:00</span>
+        <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
         </div>
     </div>
 
-    <!-- Dashboard Cek IP -->
-    <div id="ipCheckDashboard" class="dashboard-page container">
-        <div class="section-title">Cek Informasi IP</div>
+    <!-- Simplified Background -->
+    <div class="grid-bg"></div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="#dashboard" class="logo">
+                <div class="logo-icon"></div>
+                <span class="logo-text">
+                    DARK KNIGHT
+                </span>
+            </a>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
+                <li><a href="#profile" class="nav-link">Profile</a></li>
+                <li><a href="#settings" class="nav-link">Settings</a></li>
+            </ul>
+            
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section with 3D Carousel -->
+    <section class="hero" id="dashboard">
+        <div class="carousel-container">
+            <div class="carousel" id="carousel">
+                <!-- Carousel items will be generated by JavaScript -->
+            </div>
+            
+            <div class="carousel-controls">
+                <button class="carousel-btn" id="prevBtn">‹</button>
+                <button class="carousel-btn" id="nextBtn">›</button>
+            </div>
+            
+            <div class="carousel-indicators" id="indicators">
+                <!-- Indicators will be generated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile & Weather Section -->
+    <section class="profile-section" id="profile">
+        <h2 class="section-title">User Profile Information</h2>
         
-        <input type="text" id="ipAddressInput" placeholder="Masukkan IP Address (kosongkan untuk IP Anda)" />
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <!-- Avatar akan di-generate oleh JavaScript -->
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="username">User Name</h3>
+                        <p>Premium Member</p>
+                    </div>
+                </div>
+                <div class="profile-time" id="profileTime">Loading...</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="roleStatus">-</div>
+                        <div class="stat-label">Role Status</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeSenders">0</div>
+                        <div class="stat-label">Active Senders</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="daysRemaining">0</div>
+                        <div class="stat-label">Days Remaining</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="userExpired">-</div>
+                        <div class="stat-label">Expired Date</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="weather-card">
+                <div class="weather-header">
+                    <div>
+                        <h3 class="weather-title">Weather Today</h3>
+                        <p class="weather-subtitle">Real-time weather updates</p>
+                    </div>
+                    <div class="weather-time" id="weatherTime">--:--:--</div>
+                </div>
+                
+                <div class="temperature-scale">
+                    <span>35°C</span>
+                    <span>30°C</span>
+                    <span>25°C</span>
+                    <span>20°C</span>
+                </div>
+                
+                <div id="weatherChart"></div>
+                
+                <div class="temperature-markers">
+                    <span class="temperature-marker">02:00</span>
+                    <span class="temperature-marker">04:00</span>
+                    <span class="temperature-marker">06:00</span>
+                    <span class="temperature-marker">08:00</span>
+                    <span class="temperature-marker">10:00</span>
+                    <span class="temperature-marker">12:00</span>
+                </div>
+                
+                <div class="weather-info">
+                    <div class="weather-item">
+                        <div class="weather-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="weather-details">
+                            <div class="weather-value" id="currentHumidity">48%</div>
+                            <div class="weather-label">Humidity</div>
+                        </div>
+                    </div>
+                    <div class="weather-item">
+                        <div class="weather-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="weather-details">
+                            <div class="weather-value" id="currentCondition">Sunny</div>
+                            <div class="weather-label">Condition</div>
+                        </div>
+                    </div>
+                    <div class="weather-item">
+                        <div class="weather-icon">
+                            <i class="fas fa-compress-alt"></i>
+                        </div>
+                        <div class="weather-details">
+                            <div class="weather-value" id="currentPressure">2020.45</div>
+                            <div class="weather-label">Pressure</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="logo-icon"></div>
+                    <span class="logo-text">
+                        DARK KNIGHT
+                    </span>
+                </div>
+                <p class="footer-description">
+                    Platform untuk berbagai alat dan utilitas online yang berguna.
+                </p>
+                
+                <div class="footer-social">
+                    <a href="https://wa.me/6287730232643" class="social-icon whatsapp" target="_blank" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="https://t.me/kyu_pedo" class="social-icon telegram" target="_blank" title="Telegram">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://instagram.com/fachrinc" class="social-icon instagram" target="_blank" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
         
-        <button class="execute-button" id="checkIpBtn">
-            <i class="fas fa-search"></i> CEK INFORMASI IP
-        </button>
-
-        <div class="loading-spinner" id="ipLoading">
-            <div class="spinner"></div>
-            <div>Mencari informasi IP...</div>
-        </div>
-
-        <div class="ip-info-result" id="ipInfoResult">
-            <div class="ip-info-item">
-                <span class="ip-info-label">IP Address:</span>
-                <span class="ip-info-value" id="ipAddress">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">Kota:</span>
-                <span class="ip-info-value" id="ipCity">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">Region:</span>
-                <span class="ip-info-value" id="ipRegion">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">Negara:</span>
-                <span class="ip-info-value" id="ipCountry">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">Kode Negara:</span>
-                <span class="ip-info-value" id="ipCountryCode">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">Zona Waktu:</span>
-                <span class="ip-info-value" id="ipTimezone">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">ISP:</span>
-                <span class="ip-info-value" id="ipIsp">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">Organisasi:</span>
-                <span class="ip-info-value" id="ipOrg">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">Latitude:</span>
-                <span class="ip-info-value" id="ipLat">-</span>
-            </div>
-            <div class="ip-info-item">
-                <span class="ip-info-label">Longitude:</span>
-                <span class="ip-info-value" id="ipLon">-</span>
+        <div class="footer-bottom">
+            <div class="copyright">
+                © 2025 Copyright By Kyu Silence. All rights reserved.
             </div>
         </div>
-    </div>
-
-    <!-- Dashboard YouTube Downloader -->
-    <div id="youtubeDashboard" class="dashboard-page container youtube-downloader">
-        <div class="section-title">YouTube Downloader</div>
-        
-        <input type="text" id="youtubeQuery" placeholder="Masukkan judul atau link YouTube..." />
-        
-        <button class="execute-button" id="searchYoutubeBtn">
-            <i class="fas fa-search"></i> CARI VIDEO
-        </button>
-
-        <div id="youtubeStatus" style="margin: 15px 0; min-height: 20px;"></div>
-
-        <div id="youtubeResults"></div>
-
-        <div class="youtube-player" id="youtubePlayer">
-            <h3 id="youtubeTitle"></h3>
-            <p id="youtubeChannel"></p>
-            <p id="youtubeDuration"></p>
-            <audio class="youtube-audio" id="youtubeAudio" controls></audio>
-            <div class="youtube-controls">
-                <button id="youtubePlayPauseBtn" onclick="toggleYoutubePlayPause()">
-                    <i class="fas fa-play"></i> Play
-                </button>
-                <button onclick="downloadYoutubeMusic()">
-                    <i class="fas fa-download"></i> Download
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Dashboard Chat AI -->
-    <div id="chatAiDashboard" class="dashboard-page container chat-ai-dashboard">
-        <div class="section-title">Blue Knight Assistant</div>
-        
-        <div class="api-status">
-            <i class="fas fa-check-circle"></i> Gemini 2.5 Flash - Siap digunakan!
-        </div>
-
-        <div class="chat-container" id="chatContainer">
-            <div class="chat-message ai-message">
-                <div class="message-sender"> Blue Knight AI</div>
-                <div class="message-content">Halo! Saya Kyu Assistant yang menggunakan Gemini 2.5 Flash. Silakan tanyakan apa saja kepada saya! Saya siap membantu Anda dengan berbagai pertanyaan.</div>
-            </div>
-        </div>
-
-        <div class="typing-indicator" id="typingIndicator">
-            <i class="fas fa-robot"></i> Blue Knight sedang mengetik...
-        </div>
-
-        <div class="chat-input-container">
-            <textarea class="chat-input" id="chatInput" placeholder="Ketik pertanyaan Anda di sini..." rows="3"></textarea>
-            <button class="send-button" id="sendMessageBtn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-
-        <button class="clear-chat-btn" onclick="clearChat()">
-            <i class="fas fa-trash"></i> Hapus Percakapan
-        </button>
-    </div>
-
-<div id="darkverseDashboard" class="dashboard-page darkverse-dashboard">
-  <div class="container" style="background:transparent; border:none; box-shadow:none; padding:0;">
-
-    <!-- 🖼️ SLIDER FOTO + TEKS DI ATAS FOTO - FIXED SIZE -->
-    <div class="darkverse-slider">
-      <div class="slide-track">
-        <img src="https://files.catbox.moe/o2fmfp.jpg" alt="">
-        <img src="https://files.catbox.moe/o2fmfp.jpg" alt="">
-      </div>
-      <div class="darkverse-text-overlay">
-        <h2>Blue Knight</h2>
-        <p>Developer<span>@kyu_pedo</span></p>
-      </div>
-    </div>
-
-    <style>
-      .darkverse-slider {
-        position: relative;
-        width: 100%;
-        height: 180px; /* Diperkecil dari 200px */
-        overflow: hidden;
-        border-radius: 18px;
-        margin-bottom: 20px;
-        border: 1px solid #0066CC;
-        box-shadow: 0 0 20px rgba(0,174,239,0.3);
-      }
-      .darkverse-slider .slide-track {
-        display: flex;
-        width: 300%;
-        height: 100%;
-        transition: transform 0.8s ease;
-      }
-      .darkverse-slider img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;            /* Isi penuh frame */
-  object-position: center center; /* Fokus di tengah gambar */
-  transform: scale(1.10);       /* 🔍 Sedikit zoom biar pas tapi tidak kepotong */
-  flex-shrink: 0;
-  filter: brightness(0.9);
-  border-radius: 18px;
-  transition: transform 0.5s ease, filter 0.5s ease;
-}
-
-      /* 🔮 TEKS DI ATAS FOTO */
-      .darkverse-text-overlay {
-        position: absolute;
-        bottom: 15px; /* Diperkecil dari 20px */
-        left: 15px; /* Diperkecil dari 20px */
-        z-index: 5;
-        text-shadow: 0 0 12px rgba(0,174,239,0.8);
-      }
-      .darkverse-text-overlay h2 {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 20px; /* Diperkecil dari 22px */
-        color: #E0E0E0;
-        margin: 0;
-      }
-      .darkverse-text-overlay p {
-        color: #ccc;
-        font-size: 12px; /* Diperkecil dari 13px */
-        margin: 5px 0 0;
-      }
-      .darkverse-text-overlay span {
-        color: #00AEEF;
-        font-weight: 600;
-      }
-    </style>
+    </footer>
 
     <script>
-      const track = document.querySelector(".darkverse-slider .slide-track");
-      const slides = document.querySelectorAll(".darkverse-slider img");
-      let index = 0;
-      let startX = 0;
-      let isDragging = false;
-      let autoSlide;
-
-      function autoNext() {
-        index = (index + 1) % slides.length;
-        updateSlide();
-      }
-
-      function updateSlide() {
-        track.style.transform = `translateX(-${index * 100}%)`;
-      }
-
-      function startAutoSlide() {
-        autoSlide = setInterval(autoNext, 4000);
-      }
-
-      function stopAutoSlide() {
-        clearInterval(autoSlide);
-      }
-
-      // Geser manual (swipe HP)
-      track.addEventListener("touchstart", (e) => {
-        stopAutoSlide();
-        isDragging = true;
-        startX = e.touches[0].clientX;
-      });
-
-      track.addEventListener("touchmove", (e) => {
-        if (!isDragging) return;
-        const moveX = e.touches[0].clientX - startX;
-        track.style.transform = `translateX(calc(-${index * 100}% + ${moveX}px))`;
-      });
-
-      track.addEventListener("touchend", (e) => {
-        isDragging = false;
-        const diff = e.changedTouches[0].clientX - startX;
-        if (Math.abs(diff) > 50) {
-          if (diff > 0) index = Math.max(0, index - 1);
-          else index = Math.min(slides.length - 1, index + 1);
-        }
-        updateSlide();
-        startAutoSlide();
-      });
-
-      startAutoSlide();
-    </script>
-
-    <!-- MENU UTAMA YANG DIPERBAIKI -->
-    <div style="display:flex; justify-content:space-around; flex-wrap:wrap; margin-bottom:25px;">
-      <div style="width:75px; text-align:center; color:#E0E0E0; cursor:pointer;" onclick="showDashboard('attack')">
-        <div style="width:65px; height:65px; border-radius:50%; background:#001C2E; border:1px solid #0066CC; display:flex; justify-content:center; align-items:center; margin:0 auto 8px; box-shadow:0 0 10px rgba(0,174,239,0.3);">
-          <i class="fas fa-bolt" style="color:#00AEEF; font-size:20px;"></i>
-        </div>
-        <div style="font-size:12px;">DASBOARD</div>
-      </div>
-      <div style="width:75px; text-align:center; color:#E0E0E0; cursor:pointer;" onclick="showDashboard('music')">
-        <div style="width:65px; height:65px; border-radius:50%; background:#001C2E; border:1px solid #0066CC; display:flex; justify-content:center; align-items:center; margin:0 auto 8px; box-shadow:0 0 10px rgba(0,174,239,0.3);">
-          <i class="fas fa-music" style="color:#00AEEF; font-size:20px;"></i>
-        </div>
-        <div style="font-size:12px;">MUSIK</div>
-      </div>
-      <div style="width:75px; text-align:center; color:#E0E0E0; cursor:pointer;" onclick="showDashboard('ipcheck')">
-        <div style="width:65px; height:65px; border-radius:50%; background:#001C2E; border:1px solid #0066CC; display:flex; justify-content:center; align-items:center; margin:0 auto 8px; box-shadow:0 0 10px rgba(0,174,239,0.3);">
-          <i class="fas fa-globe" style="color:#00AEEF; font-size:20px;"></i>
-        </div>
-        <div style="font-size:12px;">CEK IP</div>
-      </div>
-      <div style="width:75px; text-align:center; color:#E0E0E0; cursor:pointer;" onclick="showDashboard('youtube')">
-        <div style="width:65px; height:65px; border-radius:50%; background:#001C2E; border:1px solid #0066CC; display:flex; justify-content:center; align-items:center; margin:0 auto 8px; box-shadow:0 0 10px rgba(0,174,239,0.3);">
-          <i class="fab fa-youtube" style="color:#00AEEF; font-size:20px;"></i>
-        </div>
-        <div style="font-size:12px;">YOUTUBE</div>
-      </div>
-    </div>
-
-    <!-- MENU BARIS KEDUA -->
-    <div style="display:flex; justify-content:space-around; flex-wrap:wrap; margin-bottom:25px;">
-      <div style="width:75px; text-align:center; color:#E0E0E0; cursor:pointer;" onclick="showDashboard('chat-ai')">
-        <div style="width:65px; height:65px; border-radius:50%; background:#001C2E; border:1px solid #0066CC; display:flex; justify-content:center; align-items:center; margin:0 auto 8px; box-shadow:0 0 10px rgba(0,174,239,0.3);">
-          <i class="fas fa-robot" style="color:#00AEEF; font-size:20px;"></i>
-        </div>
-        <div style="font-size:12px;">CHAT AI</div>
-      </div>
-      <div style="width:75px; text-align:center; color:#E0E0E0; cursor:pointer;" onclick="openProfileInfo()">
-        <div style="width:65px; height:65px; border-radius:50%; background:#001C2E; border:1px solid #0066CC; display:flex; justify-content:center; align-items:center; margin:0 auto 8px; box-shadow:0 0 10px rgba(0,174,239,0.3);">
-          <i class="fas fa-user" style="color:#00AEEF; font-size:20px;"></i>
-        </div>
-        <div style="font-size:12px;">PROFILE</div>
-      </div>
-      <div style="width:75px; text-align:center; color:#E0E0E0; cursor:pointer;" onclick="window.location.href='https://t.me/kyu_pedo'">
-        <div style="width:65px; height:65px; border-radius:50%; background:#001C2E; border:1px solid #0066CC; display:flex; justify-content:center; align-items:center; margin:0 auto 8px; box-shadow:0 0 10px rgba(0,174,239,0.3);">
-          <i class="fab fa-telegram" style="color:#00AEEF; font-size:20px;"></i>
-        </div>
-        <div style="font-size:12px;">DEVELOPER</div>
-      </div>
-      <div style="width:75px; text-align:center; color:#E0E0E0; cursor:pointer;" onclick="window.location.href='/logout'">
-        <div style="width:65px; height:65px; border-radius:50%; background:#001C2E; border:1px solid #0066CC; display:flex; justify-content:center; align-items:center; margin:0 auto 8px; box-shadow:0 0 10px rgba(0,174,239,0.3);">
-          <i class="fas fa-sign-out-alt" style="color:#00AEEF; font-size:20px;"></i>
-        </div>
-        <div style="font-size:12px;">LOGOUT</div>
-      </div>
-    </div>
-
-    <!-- TELEGRAM CHANNEL - PERBAIKAN: LINK YANG DAPAT DIKLIK -->
-    <div style="background:linear-gradient(90deg,#002B44,#001C2E); border:1px solid #0066CC; border-radius:14px; padding:15px; text-align:center; color:#E0E0E0; margin-bottom:20px; cursor: pointer;" onclick="window.open('https://t.me/About_Kyu', '_blank')">
-      <i class="fas fa-fire" style="color:#ff4444; margin-right:8px;"></i>
-      Telegram Channel: <span style="color:#00AEEF;">Join To Get More Info!</span>
-    </div>
-
-    <!-- SERVER STATS -->
-    <div style="background:linear-gradient(180deg,#002B44,#001C2E); border:1px solid #0066CC; border-radius:14px; padding:20px;">
-      <div style="font-family:'Orbitron',sans-serif; color:#00AEEF; font-size:18px; margin-bottom:15px; text-align:center;">
-        <i class="fas fa-chart-bar"></i> Server Stats
-      </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #0066CC; padding-top:10px;">
-        <div style="display:flex; align-items:center; gap:8px; color:#9A9A9A; font-size:14px;">
-          <i class="fas fa-user"></i> Online Users
-        </div>
-        <div style="color:#00AEEF; font-family:'Orbitron',sans-serif;">0</div>
-      </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #0066CC; padding-top:10px; margin-top:8px;">
-        <div style="display:flex; align-items:center; gap:8px; color:#9A9A9A; font-size:14px;">
-          <i class="fas fa-rocket"></i> Active Sender
-        </div>
-        <div style="color:#00AEEF; font-family:'Orbitron',sans-serif;">0</div>
-      </div>
-    </div>
-
-  </div>
-</div>
-    </div>
-
-  </div> <div id="popup" class="popup">✅ Success Send Bug</div>
-
-  <audio id="backgroundMusic" loop>
-      <source src="https://files.catbox.moe/evscpp.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
-  </audio>
-
-  <script>
-    // =======================================
-    // GEMINI API CONFIGURATION - GEMINI 2.5 FLASH
-    // =======================================
-    const GEMINI_API_KEY = 'AIzaSyB7URXCSpZtdCdKCjBGkvV27nLURDDn1FM'; // Ganti dengan API key Gemini 2.5 Flash Anda
-    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
-
-    // Utility function to format time (seconds to M:SS)
-    function formatTime(seconds) {
-        if (isNaN(seconds)) return '0:00';
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.floor(seconds % 60);
-        const paddedSeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
-        
-        return minutes + ':' + paddedSeconds;
-    }
-
-    // =======================================
-    // DOM ELEMENTS
-    // =======================================
-    const targetNumberInput = document.getElementById('targetNumberInput');
-    const bugSelect = document.getElementById('bugSelect');
-    const executeBtn = document.getElementById('executeBtn');
-    const popup = document.getElementById('popup');
-    
-    // Sidebar Elements
-    const openSidebarBtn = document.getElementById('openSidebarBtn');
-
-    // Dashboard Elements
-    const attackDashboard = document.getElementById('attackDashboard');
-    const musicDashboard = document.getElementById('musicDashboard');
-    const ipCheckDashboard = document.getElementById('ipCheckDashboard');
-    const youtubeDashboard = document.getElementById('youtubeDashboard');
-    const chatAiDashboard = document.getElementById('chatAiDashboard');
-    const darkverseDashboard = document.getElementById('darkverseDashboard');
-    
-    // Music Player Elements
-    const backgroundMusic = document.getElementById('backgroundMusic');
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const progressBar = document.getElementById('progressBar');
-    const progressContainer = document.getElementById('progressContainer');
-    const currentTimeDisplay = document.getElementById('currentTime');
-    const durationDisplay = document.getElementById('duration');
-    const songTitleDisplay = document.getElementById('songTitle');
-    
-    // Profile Elements
-    const profileIcon = document.getElementById('profileIcon');
-    const profileInfoPanel = document.getElementById('profileInfoPanel');
-    const closeProfileInfoBtn = document.getElementById('closeProfileInfoBtn');
-    const overlay = document.getElementById('overlay');
-    
-    // IP Check Elements
-    const ipAddressInput = document.getElementById('ipAddressInput');
-    const checkIpBtn = document.getElementById('checkIpBtn');
-    const ipLoading = document.getElementById('ipLoading');
-    const ipInfoResult = document.getElementById('ipInfoResult');
-    
-    // YouTube Elements
-    const youtubeQuery = document.getElementById('youtubeQuery');
-    const searchYoutubeBtn = document.getElementById('searchYoutubeBtn');
-    const youtubeStatus = document.getElementById('youtubeStatus');
-    const youtubeResults = document.getElementById('youtubeResults');
-    const youtubePlayer = document.getElementById('youtubePlayer');
-    const youtubeTitle = document.getElementById('youtubeTitle');
-    const youtubeChannel = document.getElementById('youtubeChannel');
-    const youtubeDuration = document.getElementById('youtubeDuration');
-    const youtubeAudio = document.getElementById('youtubeAudio');
-    const youtubePlayPauseBtn = document.getElementById('youtubePlayPauseBtn');
-    
-    // Chat AI Elements
-    const chatContainer = document.getElementById('chatContainer');
-    const chatInput = document.getElementById('chatInput');
-    const sendMessageBtn = document.getElementById('sendMessageBtn');
-    const typingIndicator = document.getElementById('typingIndicator');
-    
-    let isPlaying = false; 
-    let selectedBugMode = ''; 
-    let currentYoutubeAudio = null;
-    let currentYoutubeData = null;
-    let previousDashboard = 'attack'; // Menyimpan dashboard sebelumnya
-
-    // =======================================
-    // CORE APP LOGIC - FIXED VALIDATION
-    // =======================================
-    function isValidNumber(number) {
-      const cleanedNumber = number.replace(/[\s\+\-\(\)]/g, '');
-      const pattern = /^\d{7,15}$/;
-      return pattern.test(cleanedNumber);
-    }
-
-    function updateExecuteButtonState() {
-      const numberValid = isValidNumber(targetNumberInput.value.trim());
-      const bugSelected = selectedBugMode !== '';
-      executeBtn.disabled = !(numberValid && bugSelected);
-    }
-    
-    // Event listener for target number input and bug selection
-    targetNumberInput.addEventListener('input', updateExecuteButtonState);
-    bugSelect.addEventListener('change', () => {
-        selectedBugMode = bugSelect.value;
-        updateExecuteButtonState();
-    });
-
-    // =======================================
-    // DASHBOARD SWITCHING - FIXED FUNCTION
-    // =======================================
-    function showDashboard(dashboardId) {
-        // Simpan dashboard sebelumnya jika bukan darkverse
-        if (dashboardId !== 'darkverse') {
-            previousDashboard = dashboardId;
-        }
-        
-        document.querySelectorAll('.dashboard-page').forEach(el => {
-            el.classList.remove('active');
-        });
-        
-        if (dashboardId === 'music') {
-            musicDashboard.classList.add('active');
-            songTitleDisplay.innerHTML = '<i class="fas fa-headphones-alt"></i> Lagu: Chill House Mix';
-        } else if (dashboardId === 'attack') {
-            attackDashboard.classList.add('active');
-        } else if (dashboardId === 'ipcheck') {
-            ipCheckDashboard.classList.add('active');
-        } else if (dashboardId === 'youtube') {
-            youtubeDashboard.classList.add('active');
-        } else if (dashboardId === 'chat-ai') {
-            chatAiDashboard.classList.add('active');
-        } else if (dashboardId === 'darkverse') {
-            darkverseDashboard.classList.add('active');
-        }
-    }
-
-    // =======================================
-    // TOGGLE DARKVERSE DASHBOARD
-    // =======================================
-    function toggleDarkverseDashboard() {
-        const isDarkverseActive = darkverseDashboard.classList.contains('active');
-        
-        if (isDarkverseActive) {
-            // Kembali ke dashboard sebelumnya
-            showDashboard(previousDashboard);
-        } else {
-            // Tampilkan darkverse dashboard
-            showDashboard('darkverse');
-        }
-    }
-
-    // =======================================
-    // PROFILE INFO PANEL FUNCTIONS
-    // =======================================
-    function openProfileInfo() {
-        profileInfoPanel.classList.add('active');
-        overlay.classList.add('active');
-    }
-
-    function closeProfileInfo() {
-        profileInfoPanel.classList.remove('active');
-        overlay.classList.remove('active');
-    }
-
-    // =======================================
-    // MUSIC PLAYER FUNCTIONS
-    // =======================================
-    
-    function playMusic() {
-        const playPromise = backgroundMusic.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                isPlaying = true;
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            }).catch(error => {
-                console.error("Gagal memutar musik:", error);
-                alert("Gagal memutar musik. Silakan coba klik tombol Play lagi.");
-            });
-        }
-    }
-
-    function pauseMusic() {
-        backgroundMusic.pause();
-        isPlaying = false;
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-    }
-
-    function togglePlayPause() {
-        if (backgroundMusic.paused) { 
-            playMusic();
-        } else {
-            pauseMusic();
-        }
-    }
-
-    function stopMusic() {
-        backgroundMusic.pause();
-        backgroundMusic.currentTime = 0; 
-        isPlaying = false;
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        progressBar.style.width = '0%';
-        currentTimeDisplay.textContent = '0:00';
-    }
-    
-    // =======================================
-    // IP CHECK FUNCTIONS
-    // =======================================
-    async function checkIPInfo() {
-        const ipAddress = ipAddressInput.value.trim();
-        ipLoading.classList.add('active');
-        ipInfoResult.classList.remove('active');
-        
-        try {
-            let apiUrl = 'https://ipapi.co/json/';
-            if (ipAddress) {
-                const ipPattern = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
-                if (!ipPattern.test(ipAddress)) {
-                    throw new Error('Format IP address tidak valid');
+        // Loading Screen Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const progressBar = document.getElementById('progressBar');
+            
+            // Simulate loading progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // Hide loading screen after a short delay
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = '0';
+                        loadingScreen.style.visibility = 'hidden';
+                    }, 500);
                 }
-                apiUrl = `https://ipapi.co/${ipAddress}/json/`;
+                progressBar.style.width = `${progress}%`;
+            }, 200);
+        });
+
+        // Menu data for carousel
+        const menuData = [
+            {
+                id: 1,
+                title: 'SPAM NGL',
+                description: 'Tool untuk spam NGL dengan berbagai opsi',
+                image: 'https://files.catbox.moe/hwxmr7.jpg',
+                tech: ['SPAM', 'AUTO', 'CUSTOM'],
+                link: '/ngl-spam'
+            },
+            {
+                id: 2,
+                title: 'SPAM TELEGRAM',
+                description: 'Spam teks dan lainnya ke user telegram',
+                image: 'https://files.catbox.moe/mlm6fk.jpg',
+                tech: ['SPAM', 'ATTACK', 'TOOLS'],
+                link: '/telegram-spam'
+            },
+            {
+                id: 3,
+                title: 'YouTube Search',
+                description: 'Mencari, Lagu, dan Video lainnya',
+                image: 'https://files.catbox.moe/il60dq.jpg',
+                tech: ['Search', 'Video', 'Download'],
+                link: '/youtube-downloader'
+            },
+            {
+                id: 4,
+                title: 'TikTok Downloader',
+                description: 'Download video TikTok tanpa watermark',
+                image: 'https://files.catbox.moe/d5d0j9.jpg',
+                tech: ['Video', 'No WM', 'HD'],
+                link: '/tiktok'
+            },
+            {
+                id: 5,
+                title: 'WhatsApp Bug\'s',
+                description: 'Bug WhatsApp Simple with API ',
+                image: 'https://files.catbox.moe/47f9r5.jpg',
+                tech: ['Attack', 'Payload', 'Bug'],
+                link: '/execution'
+            },
+            {
+                id: 6,
+                title: 'Create Image AI',
+                description: 'Mengubah Gambar Dengan Prompt',
+                image: 'https://files.catbox.moe/j1b3xn.jpg',
+                tech: ['Download', 'Image', 'AI'],
+                link: '/rcimage-ai'
             }
+        ];
+
+        // Initialize carousel
+        let currentIndex = 0;
+        const carousel = document.getElementById('carousel');
+        const indicatorsContainer = document.getElementById('indicators');
+
+        function createCarouselItem(data, index) {
+            const item = document.createElement('div');
+            item.className = 'carousel-item';
+            item.dataset.index = index;
             
-            const response = await fetch(apiUrl);
-            const data = await response.json();
+            const techBadges = data.tech.map(tech => 
+                `<span class="tech-badge">${tech}</span>`
+            ).join('');
             
-            if (data.error) {
-                throw new Error(data.reason || 'Gagal mendapatkan informasi IP');
-            }
+            item.innerHTML = `
+                <div class="card">
+                    <div class="card-number">0${data.id}</div>
+                    <div class="card-image">
+                        <img src="${data.image}" alt="${data.title}" loading="lazy">
+                    </div>
+                    <h3 class="card-title">${data.title}</h3>
+                    <p class="card-description">${data.description}</p>
+                    <div class="card-tech">${techBadges}</div>
+                    <button class="card-cta" data-link="${data.link}">OPEN</button>
+                </div>
+            `;
             
-            document.getElementById('ipAddress').textContent = data.ip || '-';
-            document.getElementById('ipCity').textContent = data.city || '-';
-            document.getElementById('ipRegion').textContent = data.region || '-';
-            document.getElementById('ipCountry').textContent = data.country_name || '-';
-            document.getElementById('ipCountryCode').textContent = data.country_code || '-';
-            document.getElementById('ipTimezone').textContent = data.timezone || '-';
-            document.getElementById('ipIsp').textContent = data.org || data.asn || '-';
-            document.getElementById('ipOrg').textContent = data.org || '-';
-            document.getElementById('ipLat').textContent = data.latitude || '-';
-            document.getElementById('ipLon').textContent = data.longitude || '-';
-            
-            ipInfoResult.classList.add('active');
-            
-        } catch (error) {
-            alert('Error: ' + error.message);
-            console.error('IP Check Error:', error);
-        } finally {
-            ipLoading.classList.remove('active');
+            return item;
         }
-    }
-    
-    // =======================================
-    // YOUTUBE DOWNLOADER FUNCTIONS
-    // =======================================
-    function showYoutubePopup(title, message) {
-        popup.innerHTML = `<strong>${title}</strong><br>${message}`;
-        popup.style.display = 'block';
-        setTimeout(() => { popup.style.display = "none"; }, 2500);
-    }
 
-    // 🔍 CARI LAGU / VIDEO YOUTUBE
-    async function searchYoutube() {
-        const query = youtubeQuery.value.trim();
-        if (!query) return showYoutubePopup("Error", "Masukkan kata kunci dulu!");
-
-        youtubeStatus.innerHTML = `<span class="status-indicator status-processing"></span> Mencari...`;
-        youtubeResults.innerHTML = '';
-        youtubePlayer.classList.remove('active');
-
-        try {
-            const res = await fetch(`https://api.siputzx.my.id/api/s/youtube?query=${encodeURIComponent(query)}`);
-            const data = await res.json();
-            const results = data?.data;
-            if (!results || !results.length) {
-                youtubeStatus.innerHTML = `<span class="status-indicator status-error"></span> Tidak ada hasil ditemukan`;
-                return;
-            }
-            displayYoutubeResults(results);
-            youtubeStatus.innerHTML = `<span class="status-indicator status-success"></span> Ditemukan ${results.length} hasil`;
-        } catch (err) {
-            console.error(err);
-            youtubeStatus.innerHTML = `<span class="status-indicator status-error"></span> Gagal mencari: ${err.message}`;
-        }
-    }
-
-    // 🧾 TAMPILKAN HASIL YOUTUBE
-    function displayYoutubeResults(results) {
-  youtubeResults.innerHTML = "";
-
-  results.forEach((res) => {
-    // Ambil durasi dari berbagai kemungkinan struktur data API
-    const durationText =
-      res.duration?.simpleText ||
-      res.duration?.formatted ||
-      res.duration?.text ||
-      res.lengthText ||
-      res.duration ||
-      "??:??";
-
-    const thumbnail =
-      res.thumbnail?.url ||
-      res.thumbnail?.[0]?.url ||
-      res.thumbnails?.[0]?.url ||
-      res.thumbnail ||
-      "https://via.placeholder.com/80x60?text=No+Thumb";
-
-    const item = document.createElement("div");
-    item.className = "search-result-item";
-    item.innerHTML = `
-      <img src="${thumbnail}" alt="thumb">
-      <div class="search-result-info">
-        <h5>${res.title}</h5>
-      </div>
-    `;
-    item.addEventListener("click", () => playYoutubeMusic(res));
-    youtubeResults.appendChild(item);
-  });
-}
-
-    // ▶️ PUTAR AUDIO YOUTUBE
-    async function playYoutubeMusic(data) {
-  youtubeStatus.innerHTML = `<span class="status-indicator status-processing"></span> Mengambil audio...`;
-
-  try {
-    const res = await fetch(`https://restapi-v2.simplebot.my.id/download/ytmp3?url=${encodeURIComponent(data.url)}`);
-    const js = await res.json();
-    const audioUrl = js?.result;
-    if (!audioUrl) throw new Error("URL audio tidak ditemukan");
-
-    currentYoutubeAudio = youtubeAudio;
-    currentYoutubeData = data;
-
-    // Ambil durasi saja (tanpa channel)
-    const durationText =
-      data.duration?.simpleText ||
-      data.duration?.formatted ||
-      data.duration?.text ||
-      data.lengthText ||
-      data.duration ||
-      "-";
-
-    youtubeTitle.textContent = data.title;
-    youtubeChannel.textContent = ""; // ❌ Hapus nama channel, tidak ditampilkan
-    youtubeDuration.textContent = "";
-    youtubeAudio.src = audioUrl;
-    youtubePlayer.classList.add("active");
-    youtubeStatus.innerHTML = `<span class="status-indicator status-success"></span> Siap diputar: ${data.title}`;
-  } catch (err) {
-    console.error(err);
-    youtubeStatus.innerHTML = `<span class="status-indicator status-error"></span> Gagal memutar: ${err.message}`;
-  }
-}
-
-    // ⏯️ PLAY / PAUSE YOUTUBE
-    function toggleYoutubePlayPause() {
-        const btn = youtubePlayPauseBtn;
-        const icon = btn.querySelector('i');
-        if (!currentYoutubeAudio) return;
-        if (currentYoutubeAudio.paused) {
-            currentYoutubeAudio.play();
-            icon.className = 'fas fa-pause';
-            btn.innerHTML = '<i class="fas fa-pause"></i> Pause';
-        } else {
-            currentYoutubeAudio.pause();
-            icon.className = 'fas fa-play';
-            btn.innerHTML = '<i class="fas fa-play"></i> Play';
-        }
-    }
-
-    // 💾 DOWNLOAD MP3 YOUTUBE
-    function downloadYoutubeMusic() {
-        if (!currentYoutubeAudio || !currentYoutubeData) return showYoutubePopup("Error", "Tidak ada lagu yang sedang diputar");
-        const link = document.createElement('a');
-        link.href = currentYoutubeAudio.src;
-        link.download = `${currentYoutubeData.title}.mp3`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showYoutubePopup("Berhasil", `Mengunduh: ${currentYoutubeData.title}`);
-    }
-
-    // =======================================
-    // CHAT AI FUNCTIONS - GEMINI 2.5 FLASH
-    // =======================================
-    async function sendMessageToAI() {
-        const message = chatInput.value.trim();
-        if (!message) return;
-
-        // Tambahkan pesan user ke chat
-        addMessageToChat('user', message);
-        chatInput.value = '';
-        sendMessageBtn.disabled = true;
-
-        // Tampilkan typing indicator
-        typingIndicator.classList.add('active');
-
-        try {
-            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: message
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        topK: 40,
-                        topP: 0.95,
-                        maxOutputTokens: 2048,
-                    }
-                })
+        function initCarousel() {
+            // Create carousel items
+            menuData.forEach((data, index) => {
+                const item = createCarouselItem(data, index);
+                carousel.appendChild(item);
+                
+                // Create indicator
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator';
+                if (index === 0) indicator.classList.add('active');
+                indicator.dataset.index = index;
+                indicator.addEventListener('click', () => goToSlide(index));
+                indicatorsContainer.appendChild(indicator);
             });
-
-            const data = await response.json();
             
-            if (!response.ok) {
-                throw new Error(data.error?.message || 'Terjadi kesalahan pada API Gemini');
-            }
-
-            if (!data.candidates || !data.candidates[0]) {
-                throw new Error('Tidak ada respons dari AI');
-            }
-
-            const aiResponse = data.candidates[0].content.parts[0].text;
-            addMessageToChat('ai', aiResponse);
-
-        } catch (error) {
-            console.error('Error calling Gemini API:', error);
-            addMessageToChat('ai', `Maaf, terjadi kesalahan: ${error.message}. Pastikan API key Gemini 2.5 Flash valid.`);
-        } finally {
-            typingIndicator.classList.remove('active');
-            sendMessageBtn.disabled = false;
-            chatInput.focus();
+            updateCarousel();
         }
-    }
 
-    function addMessageToChat(sender, message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${sender}-message`;
-        
-        const senderDiv = document.createElement('div');
-        senderDiv.className = 'message-sender';
-        senderDiv.textContent = sender === 'user' ? 'Anda' : 'DEVIL-X AI';
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'message-content';
-        contentDiv.textContent = message;
-        
-        messageDiv.appendChild(senderDiv);
-        messageDiv.appendChild(contentDiv);
-        chatContainer.appendChild(messageDiv);
-        
-        // Scroll ke bawah
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    function clearChat() {
-        chatContainer.innerHTML = `
-            <div class="chat-message ai-message">
-                <div class="message-sender">DEVIL-X AI</div>
-                <div class="message-content">Halo! Saya DEVIL-X AI Assistant yang menggunakan Gemini 2.5 Flash. Silakan tanyakan apa saja kepada saya! Saya siap membantu Anda dengan berbagai pertanyaan.</div>
-            </div>
-        `;
-    }
-    
-    // =======================================
-    // ASEP ROKOK BACKGROUND FUNCTIONS
-    // =======================================
-    function createSmokeParticles() {
-      const smokeBackground = document.getElementById('smoke-background');
-      
-      for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          createSmokeParticle(smokeBackground);
-        }, i * 200);
-      }
-      
-      setInterval(() => {
-        createSmokeParticle(smokeBackground);
-      }, 300);
-    }
-    
-    function createSmokeParticle(container) {
-      const particle = document.createElement('div');
-      particle.classList.add('smoke-particle');
-      
-      const leftPosition = Math.random() * 100;
-      particle.style.left = `${leftPosition}%`;
-      
-      const duration = 10 + Math.random() * 20;
-      particle.style.animationDuration = `${duration}s`;
-      
-      const size = 3 + Math.random() * 7;
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      
-      const red = 200 + Math.floor(Math.random() * 55);
-      const alpha = 0.3 + Math.random() * 0.4;
-      particle.style.backgroundColor = `rgba(${red}, 50, 50, ${alpha})`;
-      
-      container.appendChild(particle);
-      
-      setTimeout(() => {
-        if (particle.parentNode) {
-          particle.parentNode.removeChild(particle);
+        function updateCarousel() {
+            const items = document.querySelectorAll('.carousel-item');
+            const indicators = document.querySelectorAll('.indicator');
+            const totalItems = items.length;
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            items.forEach((item, index) => {
+                // Calculate relative position
+                let offset = index - currentIndex;
+                
+                // Wrap around for continuous rotation
+                if (offset > totalItems / 2) {
+                    offset -= totalItems;
+                } else if (offset < -totalItems / 2) {
+                    offset += totalItems;
+                }
+                
+                const absOffset = Math.abs(offset);
+                const sign = offset < 0 ? -1 : 1;
+                
+                // Reset transform
+                item.style.transform = '';
+                item.style.opacity = '';
+                item.style.zIndex = '';
+                item.style.transition = 'all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)';
+                
+                // Adjust spacing based on screen size
+                let spacing1 = 300;
+                let spacing2 = 450;
+                
+                if (isSmallMobile) {
+                    spacing1 = 260;
+                    spacing2 = 390;
+                } else if (isMobile) {
+                    spacing1 = 280;
+                    spacing2 = 420;
+                }
+                
+                if (absOffset === 0) {
+                    // Center item
+                    item.style.transform = 'translate(-50%, -50%) translateZ(0) scale(1)';
+                    item.style.opacity = '1';
+                    item.style.zIndex = '10';
+                } else if (absOffset === 1) {
+                    // Side items
+                    const translateX = sign * spacing1;
+                    const rotation = isSmallMobile ? 20 : (isMobile ? 25 : 30);
+                    const scale = isSmallMobile ? 0.92 : (isMobile ? 0.9 : 0.85);
+                    item.style.transform = `translate(-50%, -50%) translateX(${translateX}px) translateZ(-200px) rotateY(${-sign * rotation}deg) scale(${scale})`;
+                    item.style.opacity = '0.8';
+                    item.style.zIndex = '5';
+                } else if (absOffset === 2) {
+                    // Further side items
+                    const translateX = sign * spacing2;
+                    const rotation = isSmallMobile ? 30 : (isMobile ? 35 : 40);
+                    const scale = isSmallMobile ? 0.82 : (isMobile ? 0.8 : 0.7);
+                    item.style.transform = `translate(-50%, -50%) translateX(${translateX}px) translateZ(-350px) rotateY(${-sign * rotation}deg) scale(${scale})`;
+                    item.style.opacity = '0.5';
+                    item.style.zIndex = '3';
+                } else {
+                    // Hidden items (behind)
+                    item.style.transform = 'translate(-50%, -50%) translateZ(-500px) scale(0.5)';
+                    item.style.opacity = '0';
+                    item.style.zIndex = '1';
+                }
+            });
+            
+            // Update indicators
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentIndex);
+            });
         }
-      }, duration * 1000);
-    }
 
-    // =======================================
-    // INITIALIZE EVENT LISTENERS
-    // =======================================
-    function initializeEventListeners() {
-        // Hamburger button event listener - MENGGUNAKAN TOGGLE
-        openSidebarBtn.addEventListener('click', toggleDarkverseDashboard);
-        
-        // Profile info panel event listeners
-        profileIcon.addEventListener('click', openProfileInfo);
-        closeProfileInfoBtn.addEventListener('click', closeProfileInfo);
-        overlay.addEventListener('click', closeProfileInfo);
-        
-        // Music player event listeners
-        playPauseBtn.addEventListener('click', togglePlayPause);
-        stopBtn.addEventListener('click', stopMusic);
-        
-        // Execute button event listener
-        executeBtn.addEventListener('click', () => {
-          const number = targetNumberInput.value.trim();
-          
-          if (!number) {
-            alert("Silakan masukkan nomor target.");
-            return;
-          }
-          
-          if (selectedBugMode === '') {
-              alert("Silakan pilih jenis bug terlebih dahulu.");
-              return;
-          }
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % menuData.length;
+            updateCarousel();
+        }
 
-          popup.style.display = "block";
-          
-          const cleanNumber = number.replace(/[^\d+]/g, '');
-          
-          window.location.href = '/execution?mode=' + selectedBugMode + '&target=' + encodeURIComponent(cleanNumber);
-          
-          setTimeout(() => { popup.style.display = "none"; }, 2000); 
-        });
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + menuData.length) % menuData.length;
+            updateCarousel();
+        }
 
-        // IP Check event listener
-        checkIpBtn.addEventListener('click', checkIPInfo);
-        
-        // Enter key untuk IP check
-        ipAddressInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                checkIPInfo();
+        function goToSlide(index) {
+            currentIndex = index;
+            updateCarousel();
+        }
+
+        // Event listeners
+        document.getElementById('nextBtn').addEventListener('click', nextSlide);
+        document.getElementById('prevBtn').addEventListener('click', prevSlide);
+
+        // Auto-rotate carousel (slower interval)
+        setInterval(nextSlide, 6000);
+
+        // Touch swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        carousel.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        carousel.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0) {
+                    prevSlide();
+                } else {
+                    nextSlide();
+                }
             }
+        }
+
+        // Update carousel on window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                updateCarousel();
+            }, 250);
         });
 
-        // YouTube event listeners
-        searchYoutubeBtn.addEventListener('click', searchYoutube);
-        
-        // Enter key untuk YouTube search
-        youtubeQuery.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                searchYoutube();
-            }
+        // Initialize on load
+        initCarousel();
+
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            menuToggle.classList.toggle('active');
         });
 
-        // Chat AI event listeners
-        sendMessageBtn.addEventListener('click', sendMessageToAI);
-        
-        // Enter key untuk Chat AI (Shift+Enter untuk new line)
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+        // Smooth scrolling and active navigation
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
                 e.preventDefault();
-                sendMessageToAI();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                
+                if (targetSection) {
+                    const headerHeight = document.getElementById('header').offsetHeight;
+                    const targetPosition = targetSection.offsetTop - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    navMenu.classList.remove('active');
+                    menuToggle.classList.remove('active');
+                }
+            });
+        });
+
+        // Dashboard card click handlers - Navigate to specific tool pages without loading screen
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('card-cta')) {
+                const link = e.target.getAttribute('data-link');
+                if (link) {
+                    // Direct redirect without loading screen
+                    window.location.href = link;
+                }
             }
         });
 
-        // Auto-resize textarea
-        chatInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-    }
-
-    // Update progress bar and time display
-    backgroundMusic.addEventListener('timeupdate', () => {
-        
-        if (!backgroundMusic.paused && isPlaying !== true) {
-            isPlaying = true;
-            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        // Real-time clock for profile cards
+        function updateLiveTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            document.getElementById('profileTime').textContent = timeString;
+            document.getElementById('weatherTime').textContent = timeString;
         }
 
-        if (!backgroundMusic.duration) return;
+        // Update time every second
+        setInterval(updateLiveTime, 1000);
+        updateLiveTime(); // Initial call
 
-        const progressPercent = (backgroundMusic.currentTime / backgroundMusic.duration) * 100;
-        progressBar.style.width = progressPercent + '%'; 
-        currentTimeDisplay.textContent = formatTime(backgroundMusic.currentTime);
-    });
+        // Initialize user profile dengan data dari server
+        function initUserProfile() {
+            fetch('/api/dashboard-data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Set username
+                    document.getElementById('username').textContent = data.username;
+                    
+                    // Create avatar dengan first letter
+                    const firstLetter = data.username.charAt(0).toUpperCase();
+                    document.getElementById('profileAvatar').textContent = firstLetter;
+                    
+                    // Set data dari server
+                    document.getElementById('roleStatus').textContent = data.role;
+                    document.getElementById('activeSenders').textContent = data.activeSenders;
+                    document.getElementById('daysRemaining').textContent = data.daysRemaining;
+                    document.getElementById('userExpired').textContent = data.expired.split(' ')[0]; // Hanya tanggalnya saja
+                    
+                    // Update profile time
+                    document.getElementById('profileTime').textContent = `Exp: ${data.expired}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching user info:', error);
+                    // Fallback ke data default jika error
+                    const username = localStorage.getItem('username') || 'User';
+                    document.getElementById('username').textContent = username;
+                    const firstLetter = username.charAt(0).toUpperCase();
+                    document.getElementById('profileAvatar').textContent = firstLetter;
+                    document.getElementById('roleStatus').textContent = 'User';
+                    document.getElementById('activeSenders').textContent = '0';
+                    document.getElementById('daysRemaining').textContent = '0';
+                    document.getElementById('userExpired').textContent = 'N/A';
+                });
+        }
 
-    // Update duration when metadata is loaded
-    backgroundMusic.addEventListener('loadedmetadata', () => {
-        durationDisplay.textContent = formatTime(backgroundMusic.duration);
-    });
-    
-    // Seek functionality (klik di garis progress)
-    progressContainer.addEventListener('click', (e) => {
-        const rect = progressContainer.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const width = rect.width;
-        
-        const duration = backgroundMusic.duration;
-        if (isNaN(duration)) return; 
+        // Weather data simulation
+        let weatherData = [
+            { x: '02:00', y: 22 },
+            { x: '04:00', y: 20 },
+            { x: '06:00', y: 21 },
+            { x: '08:00', y: 24 },
+            { x: '10:00', y: 28 },
+            { x: '12:00', y: 31 }
+        ];
 
-        const newTime = (clickX / width) * duration;
-        backgroundMusic.currentTime = newTime;
-    });
+        // Initialize weather chart
+        let weatherChart;
+        function initWeatherChart() {
+            const options = {
+                series: [{
+                    name: 'Temperature',
+                    data: weatherData
+                }],
+                chart: {
+                    height: 220,
+                    type: 'line',
+                    foreColor: '#e0e0e0',
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: 'linear',
+                        speed: 800,
+                        animateGradually: {
+                            enabled: true,
+                            delay: 150
+                        },
+                        dynamicAnimation: {
+                            enabled: true,
+                            speed: 350
+                        }
+                    }
+                },
+                colors: ['#b19cd9'],
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3,
+                    colors: ['#b19cd9']
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shade: 'dark',
+                        gradientToColors: ['#d8c8ff'],
+                        shadeIntensity: 1,
+                        type: 'vertical',
+                        opacityFrom: 0.7,
+                        opacityTo: 0.2,
+                        stops: [0, 90, 100]
+                    }
+                },
+                grid: {
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    strokeDashArray: 3,
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
+                },
+                xaxis: {
+                    categories: ['02:00', '04:00', '06:00', '08:00', '10:00', '12:00'],
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                    labels: {
+                        style: {
+                            fontSize: '11px',
+                            fontFamily: 'Orbitron, monospace'
+                        }
+                    }
+                },
+                yaxis: {
+                    min: 20,
+                    max: 35,
+                    labels: {
+                        formatter: function (value) {
+                            return value + "°C";
+                        },
+                        style: {
+                            fontSize: '11px',
+                            fontFamily: 'Orbitron, monospace'
+                        }
+                    }
+                },
+                tooltip: {
+                    theme: 'dark',
+                    x: {
+                        formatter: function(val) {
+                            return val;
+                        }
+                    },
+                    y: {
+                        formatter: function(val) {
+                            return val + "°C";
+                        }
+                    }
+                },
+            };
 
-    // Initialize & Event Listeners
-    document.addEventListener('DOMContentLoaded', () => {
-        bugSelect.value = ''; 
-        updateExecuteButtonState();
-        
-        // Initialize all event listeners
-        initializeEventListeners();
-        
-        // Initialize smoke background
-        createSmokeParticles();
-    });
-  </script>
+            weatherChart = new ApexCharts(document.querySelector("#weatherChart"), options);
+            weatherChart.render();
+        }
+
+        // Update weather data with smooth transitions
+        function updateWeatherData() {
+            // Generate new temperature data with realistic variations
+            const newData = [
+                { x: '02:00', y: Math.floor(Math.random() * 5) + 20 },
+                { x: '04:00', y: Math.floor(Math.random() * 5) + 19 },
+                { x: '06:00', y: Math.floor(Math.random() * 5) + 21 },
+                { x: '08:00', y: Math.floor(Math.random() * 5) + 24 },
+                { x: '10:00', y: Math.floor(Math.random() * 5) + 27 },
+                { x: '12:00', y: Math.floor(Math.random() * 5) + 30 }
+            ];
+            
+            // Update the chart with new data
+            weatherChart.updateSeries([{
+                data: newData
+            }]);
+            
+            // Update the weather info with current values
+            const currentTemp = newData[newData.length - 1].y;
+            const currentHumidity = Math.floor(Math.random() * 20) + 40;
+            const conditions = ['Sunny', 'Cloudy', 'Partly Cloudy', 'Rainy'];
+            const currentCondition = conditions[Math.floor(Math.random() * conditions.length)];
+            
+            document.getElementById('currentHumidity').textContent = `${currentHumidity}%`;
+            document.getElementById('currentCondition').textContent = currentCondition;
+            document.getElementById('currentPressure').textContent = (Math.random() * 100 + 2000).toFixed(2);
+        }
+
+        // Update system data dengan informasi real-time
+        function updateSystemData() {
+            // Update connection status berdasarkan sessions
+            fetch('/api/dashboard-data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update active senders count
+                    document.getElementById('activeSenders').textContent = data.activeSenders;
+                })
+                .catch(error => {
+                    console.error('Error fetching system data:', error);
+                    document.getElementById('activeSenders').textContent = '0';
+                });
+        }
+
+        // Panggil fungsi initialization
+        initUserProfile();
+        initWeatherChart();
+
+        // Update system data setiap 5 detik
+        setInterval(updateSystemData, 5000);
+        updateSystemData(); // Initial call
+
+        // Update weather data every 10 seconds
+        setInterval(updateWeatherData, 10000);
+    </script>
 </body>
 </html>
